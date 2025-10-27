@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cashflow and Net Business Income</title>
+
+  <!-- PWA manifest -->
+  <link rel="manifest" href="manifest.webmanifest" />
+
+  <!-- Basic theme color for mobile status bar -->
+  <meta name="theme-color" content="#0f172a"/>
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", Roboto, sans-serif;
+      background-color: #0f172a;
+      color: #f8fafc;
+      display: flex;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+    .app {
+      width: 100%;
+      max-width: 1100px;
+      background-color: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.8);
+    }
+    h1 {
+      margin: 0 0 4px;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #fff;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    h1 span.tag {
+      background: linear-gradient(to right, #38bdf8, #0ea5e9);
+      color: #0f172a;
+      font-size: .7rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+    .subtitle {
+      color: #94a3b8;
+      font-size: .9rem;
+      margin-bottom: 24px;
+      line-height: 1.4;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    @media(max-width:900px){
+      .grid { grid-template-columns: 1fr; }
+    }
+    .card {
+      background-color: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 20px 20px 16px;
+    }
+    .card h2 {
+      margin: 0 0 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .card h2 .label {
+      color: #38bdf8;
+      font-size: .8rem;
+      font-weight: 500;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .row label {
+      font-size: .8rem;
+      color: #cbd5e1;
+      line-height: 1.3;
+    }
+    .row .input-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+    input[type="number"] {
+      background-color: #1e293b;
+      border: 1px solid #475569;
+      border-radius: 10px;
+      color: #fff;
+      padding: 8px 10px;
+      font-size: .9rem;
+      width: 140px;
+      text-align: right;
+    }
+    input[type="number"]:focus {
+      outline: 2px solid #38bdf8;
+      border-color: #38bdf8;
+    }
+    .inline-hint {
+      font-size: .7rem;
+      color: #64748b;
+      text-align: right;
+      margin-top: 2px;
+    }
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media(max-width:600px){
+      .results-grid { grid-template-columns: 1fr; }
+    }
+    .metric-card {
+      background-color: #1e293b;
+      border: 1px solid #475569;
+      border-radius: 14px;
+      padding: 16px;
+    }
+    .metric-label {
+      font-size: .7rem;
+      color: #94a3b8;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .metric-value {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.2;
+    }
+    .metric-sub {
+      font-size: .7rem;
+      color: #64748b;
+      margin-top: 4px;
+      line-height: 1.3;
+    }
+    .footer-note {
+      color: #475569;
+      font-size: .7rem;
+      text-align: center;
+      margin-top: 28px;
+      line-height: 1.4;
+    }
+    .highlight-money {
+      color: #4ade80;
+    }
+    .highlight-passive {
+      color: #fde047;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>
+      Cashflow and Net Business Income
+      <span class="tag">MBPS / BBC Model</span>
+    </h1>
+    <div class="subtitle">
+      Plug in deal volume and cost. This shows your upfront wholesale + subject-to income,
+      ongoing monthly cashflow, and an estimated net after overhead.
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>
+          Inputs
+          <span class="label">edit these</span>
+        </h2>
+
+        <div class="row">
+          <label>Wholesale deals per month</label>
+          <div class="input-wrap">
+            <input id="wholesaleDeals" type="number" value="25" min="0" step="1" />
+            <div class="inline-hint">count</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <label>Average profit per wholesale deal ($)</label>
+          <div class="input-wrap">
+            <input id="wholesaleProfit" type="number" value="17500" min="0" step="500" />
+            <div class="inline-hint">assignment fee / spread</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <label>Subject-to deals per month</label>
+          <div class="input-wrap">
+            <input id="subtoDeals" type="number" value="5" min="0" step="1" />
+            <div class="inline-hint">count</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <label>Upfront payout to you per subject-to ($)</label>
+          <div class="input-wrap">
+            <input id="subtoUpfront" type="number" value="17500" min="0" step="500" />
+            <div class="inline-hint">paid at takeover</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <label>Monthly net cashflow per subject-to ($)</label>
+          <div class="input-wrap">
+            <input id="subtoMonthly" type="number" value="500" min="0" step="50" />
+            <div class="inline-hint">after all expenses</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <label>Total monthly overhead ($)</label>
+          <div class="input-wrap">
+            <input id="overhead" type="number" value="60000" min="0" step="1000" />
+            <div class="inline-hint">VA payroll, marketing, dispo, etc.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="card">
+        <h2>
+          Monthly / Annual Results
+          <span class="label">auto-calculated</span>
+        </h2>
+
+        <div class="results-grid">
+          <div class="metric-card">
+            <div class="metric-label">
+              <span>Wholesale Upfront / Mo</span>
+              <span>gross</span>
+            </div>
+            <div class="metric-value" id="wholesaleMonthlyUpfront">$0</div>
+            <div class="metric-sub" id="wholesaleAnnualUpfront">/ yr: $0</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-label">
+              <span>Subject-To Upfront / Mo</span>
+              <span>gross</span>
+            </div>
+            <div class="metric-value" id="subtoMonthlyUpfront">$0</div>
+            <div class="metric-sub" id="subtoAnnualUpfront">/ yr: $0</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-label">
+              <span>Subject-To Cashflow / Mo</span>
+              <span class="highlight-passive">passive</span>
+            </div>
+            <div class="metric-value" id="subtoMonthlyCashflow">$0</div>
+            <div class="metric-sub" id="subtoAnnualCashflow">/ yr: $0</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-label">
+              <span>Total Upfront / Mo</span>
+              <span class="highlight-money">gross</span>
+            </div>
+            <div class="metric-value" id="totalMonthlyUpfront">$0</div>
+            <div class="metric-sub" id="totalAnnualUpfront">/ yr: $0</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-label">
+              <span>Est. Net Biz Income / Mo</span>
+              <span>after overhead</span>
+            </div>
+            <div class="metric-value" id="netMonthly">$0</div>
+            <div class="metric-sub" id="netAnnual">/ yr: $0</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-label">
+              <span>Passive Cashflow Stack</span>
+              <span class="highlight-passive">building</span>
+            </div>
+            <div class="metric-value" id="passiveStackMonthly">$0</div>
+            <div class="metric-sub" id="passiveStackAnnual">
+              If you keep all subject-to deals for 12 months
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      All numbers are estimates. “Net Biz Income” = (Wholesale upfront + Subject-to upfront)
+      − Overhead. Ongoing monthly cashflow from subject-to is shown separately because it stacks.
+    </div>
+  </div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+
+    function fmt(num){
+      return "$" + Number(num).toLocaleString(undefined, {maximumFractionDigits:0});
+    }
+
+    function calc(){
+      const wholesaleDeals   = parseFloat($("wholesaleDeals").value)   || 0;
+      const wholesaleProfit  = parseFloat($("wholesaleProfit").value)  || 0;
+      const subtoDeals       = parseFloat($("subtoDeals").value)       || 0;
+      const subtoUpfront     = parseFloat($("subtoUpfront").value)     || 0;
+      const subtoMonthly     = parseFloat($("subtoMonthly").value)     || 0;
+      const overhead         = parseFloat($("overhead").value)         || 0;
+
+      const wholesaleUpfrontMonthly = wholesaleDeals * wholesaleProfit;
+      const wholesaleUpfrontAnnual  = wholesaleUpfrontMonthly * 12;
+
+      const subtoUpfrontMonthly = subtoDeals * subtoUpfront;
+      const subtoUpfrontAnnual  = subtoUpfrontMonthly * 12;
+
+      const subtoCashflowMonthly = subtoDeals * subtoMonthly;
+      const subtoCashflowAnnual  = subtoCashflowMonthly * 12;
+
+      const totalUpfrontMonthly = wholesaleUpfrontMonthly + subtoUpfrontMonthly;
+      const totalUpfrontAnnual  = totalUpfrontMonthly * 12;
+
+      const netMonthly = totalUpfrontMonthly - overhead;
+      const netAnnual  = netMonthly * 12;
+
+      const stackMonthlyEndOfYear = (12 * subtoDeals) * subtoMonthly;
+      const stackAnnualEndOfYear  = stackMonthlyEndOfYear * 12;
+
+      $("wholesaleMonthlyUpfront").textContent = fmt(wholesaleUpfrontMonthly);
+      $("wholesaleAnnualUpfront").textContent  = "/ yr: " + fmt(wholesaleUpfrontAnnual);
+
+      $("subtoMonthlyUpfront").textContent = fmt(subtoUpfrontMonthly);
+      $("subtoAnnualUpfront").textContent  = "/ yr: " + fmt(subtoUpfrontAnnual);
+
+      $("subtoMonthlyCashflow").textContent = fmt(subtoCashflowMonthly);
+      $("subtoAnnualCashflow").textContent  = "/ yr: " + fmt(subtoCashflowAnnual);
+
+      $("totalMonthlyUpfront").textContent = fmt(totalUpfrontMonthly);
+      $("totalAnnualUpfront").textContent  = "/ yr: " + fmt(totalUpfrontAnnual);
+
+      $("netMonthly").textContent = fmt(netMonthly);
+      $("netAnnual").textContent  = "/ yr: " + fmt(netAnnual);
+
+      $("passiveStackMonthly").textContent = fmt(stackMonthlyEndOfYear);
+      $("passiveStackAnnual").textContent  = "End of 12 months passive: " +
+          fmt(stackAnnualEndOfYear) + " / yr";
+    }
+
+    ["wholesaleDeals","wholesaleProfit","subtoDeals","subtoUpfront","subtoMonthly","overhead"]
+      .forEach(id=>{
+        $(id).addEventListener("input", calc);
+      });
+
+    calc();
+
+    // Register the service worker for PWA offline support
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./service-worker.js')
+        .catch(err => console.log('SW registration failed', err));
+    }
+  </script>
+</body>
+</html>
